@@ -72,6 +72,12 @@ export interface ContestCardProps {
   onStart: () => void;
 }
 
+export interface Option{
+  id: string;
+  option_text: string;
+  is_correct: boolean;
+}
+
 export interface InfoTableProps {
   totalQuestions: number;
   totalScore: number;

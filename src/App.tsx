@@ -31,7 +31,7 @@ const router = createBrowserRouter([
     element: <DisQualified />,
   },
   {
-    path: "/contestcreator",
+    path: "/admin/contestcreator",
     element: (
       <ContestProvider>
         <ContestCreator />
@@ -39,7 +39,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/preview",
+    path: "/admin/preview",
     element: (
       <ContestProvider>
         <PreviewContest />
