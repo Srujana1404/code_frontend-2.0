@@ -47,3 +47,4 @@ export const getQuestionStatusClass = (
   if (isAnswered) return 'answered';
   return 'unanswered';
 };
+

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { CheckCircle, Circle, AlertCircle, Clock, Send, ArrowLeft, Trophy, Target, AlertTriangle } from 'lucide-react';
-import type { QuizOverviewProps } from '../../types/dataTypes';
+import type { QuizOverviewProps, SubmitQuizResponse } from '../../types/dataTypes';
+import Axios from 'axios';
 
 const QuizOverview: React.FC<QuizOverviewProps> = ({
   questions,
@@ -44,19 +45,23 @@ const QuizOverview: React.FC<QuizOverviewProps> = ({
     submittedRef.current = true;
     setIsSubmitting(true);
 
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      localStorage.removeItem(`mcq-quiz-${id}`);
-      setSubmitComplete(true);
-      setTimeout(() => navigate('/'), 3000);
-    } catch (error) {
+    Axios.post<SubmitQuizResponse, { status: number }>('/api/submit',
+      quizState,
+    ).then((response: SubmitQuizResponse) => {
+      if (response.status === 200) {
+        setSubmitComplete(true);
+        localStorage.removeItem(`mcq-quiz-${id}`); // Clear local storage
+        setTimeout(() => {
+          navigate(`/`);
+        }, 3000); // Redirect after 3 seconds
+      }
+    }).catch((error: unknown) => {
       console.error('Error submitting quiz:', error);
       setIsSubmitting(false);
-      submittedRef.current = false;
+      submittedRef.current = false; // Allow retry
       alert('Failed to submit quiz. Please try again.');
-    }
+    });
+
   };
 
   if (submitComplete) {

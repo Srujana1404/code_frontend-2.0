@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Edit, Send, Clock, FileText, Award, Minus } from 'lucide-react';
-import SubmissionSuccess from './submissionSuccess';
-import { useContest } from './contestContext';
+import Axios from 'axios';
+import { useContest } from '../../components/common/contestContext';
+import SubmissionSuccess from '../../components/Details_test/submissionSuccess';
+import LoadingScreen from '../../components/Custom/LodingScreen';
 
 const PreviewContest: React.FC = () => {
   const navigate = useNavigate();
   const { contest, showUpdateAlert, setShowUpdateAlert } = useContest();
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
 
   useEffect(() => {
     if (showUpdateAlert) {
@@ -19,13 +24,30 @@ const PreviewContest: React.FC = () => {
   }, [showUpdateAlert, setShowUpdateAlert]);
 
   const handleEdit = () => {
-    navigate('/contestcreator');
+    navigate('/admin/contestcreator');
   };
 
   const handleSubmit = () => {
-    // ...submit logic...
-    setShowSuccessModal(true);
+    setIsLoading(true); // Show loading screen
+    Axios.post('/api/contestCreate', contest)
+      .then((response) => {
+        console.log(response);
+        if (response.status === 201) {
+          setSuccessMessage(response.data.message || 'Contest submitted successfully!');
+          setShowSuccessModal(true);
+        }
+      })
+      .catch((error) => {
+        console.error('Error submitting contest:', error);
+      })
+      .finally(() => {
+        setIsLoading(false); // Hide loading screen after response
+      });
   };
+
+  if (isLoading) {
+    return <LoadingScreen message="Submitting your contest..." />;
+  }
 
   const formatDateTime = (dateTime: string) => {
     if (!dateTime) return 'Not set';
@@ -60,7 +82,7 @@ const PreviewContest: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-100 py-6 px-2 md:px-6 transition-all duration-300">
-      <div className="max-w-3xl mx-auto">
+      <div className="max-w-5xl mx-auto">
         {/* Update Alert */}
         {showUpdateAlert && (
           <div className="flex justify-center mb-4 animate-fade-in">
@@ -87,9 +109,9 @@ const PreviewContest: React.FC = () => {
               <strong className="w-40 text-gray-600">Contest Name:</strong>
               <span className="text-gray-800">{contest.cName}</span>
             </div>
-            <div className="flex flex-col md:flex-row md:items-center gap-2">
+            <div className="flex flex-col md:flex-row md:items-start gap-2">
               <strong className="w-40 text-gray-600">Description:</strong>
-              <span className="text-gray-800">{contest.cDesc}</span>
+              <span className="text-gray-800 md:whitespace-pre-line md:flex-1 max-h-48 overflow-y-auto">{contest.cDesc}</span>
             </div>
             <div className="flex flex-col md:flex-row md:items-center gap-2">
               <Clock size={18} className="text-blue-500 mr-1" />
@@ -140,11 +162,10 @@ const PreviewContest: React.FC = () => {
                   {question.options.map((option, optIndex) => (
                     <div
                       key={option.id}
-                      className={`flex items-center gap-3 px-3 py-2 rounded transition-all duration-200 ${
-                        option.is_correct
-                          ? 'bg-green-50 border border-green-300'
-                          : 'bg-white border border-gray-200'
-                      }`}
+                      className={`flex items-center gap-3 px-3 py-2 rounded transition-all duration-200 ${option.is_correct
+                        ? 'bg-green-50 border border-green-300'
+                        : 'bg-white border border-gray-200'
+                        }`}
                     >
                       <span className="bg-teal-500 text-white w-8 h-8 flex items-center justify-center rounded-full font-bold text-base">
                         {String.fromCharCode(65 + optIndex)}
@@ -183,7 +204,10 @@ const PreviewContest: React.FC = () => {
       </div>
 
       {showSuccessModal && (
-        <SubmissionSuccess onClose={() => setShowSuccessModal(false)} />
+        <SubmissionSuccess
+          onClose={() => setShowSuccessModal(false)}
+          successMessage={successMessage}
+        />
       )}
 
       {/* Animations */}

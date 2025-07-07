@@ -106,6 +106,11 @@ export interface WarningModalProps {
   onClose: () => void;
 }
 
+export interface SubmitQuizResponse {
+  status: number;
+  [key: string]: any;
+}
+
 export type FormErrors = {
   [K in keyof FormData]?: string;
 };

@@ -1,8 +1,8 @@
 import React, { useRef, useState } from 'react';
 import { Plus, Trash2, Eye, Clock, FileText, CheckCircle, AlertCircle } from 'lucide-react';
 import type { Question, Option } from '../../types/dataTypes';
-import { useContest } from './contestContext';
 import { useNavigate } from 'react-router-dom';
+import { useContest } from '../../components/common/contestContext';
 
 const ContestCreator: React.FC = () => {
     const navigate = useNavigate();
@@ -205,7 +205,7 @@ const ContestCreator: React.FC = () => {
         if (!validateForm()) {
             return;
         }
-        navigate('/preview')
+        navigate('/admin/preview')
     };
 
     return (

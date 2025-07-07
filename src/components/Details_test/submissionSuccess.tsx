@@ -2,10 +2,11 @@ import React from 'react';
 import { CheckCircle, X } from 'lucide-react';
 
 interface SubmissionSuccessProps {
+  successMessage?: string;
   onClose: () => void;
 }
 
-const SubmissionSuccess: React.FC<SubmissionSuccessProps> = ({ onClose }) => {
+const SubmissionSuccess: React.FC<SubmissionSuccessProps> = ({ successMessage, onClose }) => {
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm animate-fade-in"
@@ -24,7 +25,7 @@ const SubmissionSuccess: React.FC<SubmissionSuccessProps> = ({ onClose }) => {
         </button>
         <div className="flex flex-col items-center text-center">
           <CheckCircle className="text-green-500 mb-4 animate-bounce-in" size={64} />
-          <h2 className="text-2xl font-bold mb-2 text-gray-800">🎉 Contest Successfully Submitted!</h2>
+          <h2 className="text-2xl font-bold mb-2 text-gray-800">🎉 ${successMessage} </h2>
           <p className="text-gray-600 mb-6">Your quiz contest has been created and is ready to use.</p>
           <button
             onClick={onClose}

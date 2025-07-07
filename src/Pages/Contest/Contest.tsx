@@ -48,7 +48,7 @@ function Contest() {
         navigate(`/contests/${id}/mcqs`);
     };
 
-    if (!contestdata) return <div>Loading...</div>;
+    if (!contestdata) return <div>Loading...</div>;  //todo loading scrren
 
     return (
         <>

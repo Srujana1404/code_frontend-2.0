@@ -33,32 +33,39 @@ const MCQQuiz: React.FC = () => {
   const isLastQuestion = currentQuestionIndex === questions.length - 1;
 
   useEffect(() => {
-    setLoading(true);
-    Axios
-      .get(`/api/MCQdata/${id}`)
-      .then((res: { data: { mcqdata: MCQRaw[]; }; }) => {
-        const data = res.data as { mcqdata: MCQRaw[] };
-        const raw: MCQRaw[] = data.mcqdata;
-        setQuestions(groupQuestions(raw));
-        setLoading(false);
-      })
-      .catch((_err: any) => {
-        setQuestions([]);
-        setLoading(false);
-      });
-  }, [id]);
-
-  useEffect(() => {
     Axios.get(`/api/contests/${id}`)
       .then((response: { data: { contestdata: contestdata; }; }) => setContestdata((response.data as { contestdata: contestdata }).contestdata))
       .catch((error: any) => console.error("Error fetching contest:", error));
   }, [id]);
 
   useEffect(() => {
-    if (contestdata && contestdata.status !== "active") {
+    if (contestdata && contestdata.status === "upcoming") {
+      navigate('/upcomingtest');
+    }
+  }, [contestdata]);
+  console.log(contestdata?.status);
+
+  useEffect(() => {
+    if (contestdata && contestdata.status === "inactive") {
       navigate('/contest-over');
     }
   }, [contestdata]);
+
+  useEffect(() => {
+  Axios.get(`/api/MCQdata/${id}`)
+    .then((res: { data: { mcqdata: MCQRaw[] } }) => {
+      console.log("MCQ data received:", res.data.mcqdata);
+      const raw = res.data.mcqdata;
+      setQuestions(groupQuestions(raw));
+      setLoading(false);
+    })
+    .catch((err) => {
+      console.error("Error loading MCQ data", err);
+      setQuestions([]);
+      setLoading(false);
+    });
+}, [id]);
+
 
   const handleOptionChange = (questionId: number, optionId: number) => {
     setQuizState({
